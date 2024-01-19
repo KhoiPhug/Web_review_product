@@ -91,43 +91,173 @@ const data = [
   },
 ];
 
-const getAllBlog = async ({ page = 1 }) => {
-  try {
-    let get = axios.get(
-      `http://estatemanage.laptrinhjavawebsoftware.com/api-admin-blogs?page=${page}`
-    );
+let access_token = '';
 
-    return (await get).data;
+const getAllBlog = async ({ page = 1 }) => {
+
+  await getToken();
+
+  // Chuẩn bị các thông tin cần thiết cho yêu cầu
+  console.log(2211,access_token); 
+  var headers = new Headers({
+    'Authorization': 'Bearer ' + access_token,
+    'Content-Type': 'application/json'
+  });
+
+  // Tạo yêu cầu
+  var requestOptions = {
+    method: 'GET', // Hoặc 'POST', 'PUT', 'DELETE', tùy thuộc vào loại yêu cầu bạn muốn thực hiện
+    headers: headers,
+    // body: JSON.stringify(category) // Thêm body nếu bạn đang gửi dữ liệu POST hoặc PUT
+  };
+
+  // call api
+  // try {
+  //   let get = axios.get(`http://localhost:8181/api/review/client?page=${page}`, { headers });
+  //   console.log(2222, (await get).data)
+  //   return (await get).data;
+  // } catch (error) {
+  //   return [];
+  // }
+
+  try {
+    console.log(1111);
+    const response = await fetch('http://localhost:8181/api/review/client?page=1', requestOptions);
+  
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+  
+    const data = await response.json();
+    console.log('API Response:', data);
+    return data;
   } catch (error) {
-    return [];
+    console.error('There was a problem with the fetch operation:', error);
   }
 };
+
+const getToken = () => {
+  return new Promise((resolve, reject) => {
+    var xhr = new XMLHttpRequest();
+    var tokenUrl = 'http://keycloak:8080/realms/spring-boot-microservices-realm/protocol/openid-connect/token';
+
+    xhr.open('POST', tokenUrl, true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.withCredentials = true;
+
+    var client_id = 'spring-cloud-client';
+    var client_secret = 'wQGqOKzR9iG9Au6BHlUBA8iKu3e486B3';
+    var scope = 'openid offline_access';
+
+    var params = 'grant_type=client_credentials&client_id=' + client_id + '&client_secret=' + client_secret + '&scope=' + scope;
+
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState == 4) {
+        if (xhr.status == 200) {
+          var response = JSON.parse(xhr.responseText);
+          access_token = response.access_token;
+          console.log('Access Token:', access_token);
+          resolve(access_token);
+        } else {
+          console.error('Failed to get access token:', xhr.statusText);
+          reject('Failed to get access token');
+        }
+      }
+    };
+
+    xhr.send(params);
+  });
+};
+
+
 const getBlogById = (id) => {
   return data.filter((el) => el.id === id)[0];
 };
 
-const getBlogByCategoryId = async ({ id = 1, page = 1 }) => {
-  try {
-    let get = axios.get(
-      `http://estatemanage.laptrinhjavawebsoftware.com/api-admin-blogs/findByCategoryId/${id}?page=${page}`
-    );
+const getBlogByCategoryId = async ({ id , page = 1 }) => {
 
-    return (await get).data;
+  
+  await getToken();
+
+  // Chuẩn bị các thông tin cần thiết cho yêu cầu
+  var headers = new Headers({
+    'Authorization': 'Bearer ' + access_token,
+    'Content-Type': 'application/json'
+  });
+
+  // Tạo yêu cầu
+  var requestOptions = {
+    method: 'GET', // Hoặc 'POST', 'PUT', 'DELETE', tùy thuộc vào loại yêu cầu bạn muốn thực hiện
+    headers: headers,
+  };
+
+  try {
+    console.log(1111);
+    const response = await fetch('http://localhost:8181/api/review/client?page=1&categoryCode='+id, requestOptions);
+  
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+  
+    const data = await response.json();
+    console.log('API Response:', data);
+    return data;
   } catch (error) {
-    return [];
+    console.error('There was a problem with the fetch operation:', error);
   }
+  // try {
+  //   let get = axios.get(
+  //     `http://estatemanage.laptrinhjavawebsoftware.com/api-admin-blogs/findByCategoryId/${id}?page=${page}`
+  //   );
+
+  //   return (await get).data;
+  // } catch (error) {
+  //   return [];
+  // }
 };
 
 const getBlogBySlug = async (slug) => {
-  try {
-    let get = axios.get(
-      `http://estatemanage.laptrinhjavawebsoftware.com/api-admin-blogs/findOneBySlug/${slug}`
-    );
 
-    return (await get).data;
+  await getToken();
+
+  // Chuẩn bị các thông tin cần thiết cho yêu cầu
+  var headers = new Headers({
+    'Authorization': 'Bearer ' + access_token,
+    'Content-Type': 'application/json'
+  });
+
+  // Tạo yêu cầu
+  var requestOptions = {
+    method: 'GET', // Hoặc 'POST', 'PUT', 'DELETE', tùy thuộc vào loại yêu cầu bạn muốn thực hiện
+    headers: headers,
+    // body: JSON.stringify(category) // Thêm body nếu bạn đang gửi dữ liệu POST hoặc PUT
+  };
+
+  try {
+    console.log(1111);
+    const response = await fetch('http://localhost:8181/api/review/findOne?slugBlog='+slug, requestOptions);
+  
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+  
+    const data = await response.json();
+    console.log('API Response:', data);
+    return data;
   } catch (error) {
-    return [];
+    console.error('There was a problem with the fetch operation:', error);
   }
+
+
+  // try {
+  //   let get = axios.get(
+  //     `http://estatemanage.laptrinhjavawebsoftware.com/api-admin-blogs/findOneBySlug/${slug}`
+  //   );
+
+  //   return (await get).data;
+  // } catch (error) {
+  //   return [];
+  // }
 };
 
 const getRecentBlogs = async () => {
@@ -143,15 +273,48 @@ const getRecentBlogs = async () => {
 };
 
 const searchBlogByKey = async ({ key, page = 1 }) => {
-  try {
-    let get = axios.get(
-      `http://estatemanage.laptrinhjavawebsoftware.com/api-admin-blogs/search?key=${key}&page=${page}`
-    );
 
-    return (await get).data;
+
+  await getToken();
+
+  // Chuẩn bị các thông tin cần thiết cho yêu cầu
+  var headers = new Headers({
+    'Authorization': 'Bearer ' + access_token,
+    'Content-Type': 'application/json'
+  });
+
+  // Tạo yêu cầu
+  var requestOptions = {
+    method: 'GET', // Hoặc 'POST', 'PUT', 'DELETE', tùy thuộc vào loại yêu cầu bạn muốn thực hiện
+    headers: headers,
+    // body: JSON.stringify(category) // Thêm body nếu bạn đang gửi dữ liệu POST hoặc PUT
+  };
+
+  try {
+    console.log(1111);
+    const response = await fetch('http://localhost:8181/api/review/client?page=1&key='+key, requestOptions);
+  
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+  
+    const data = await response.json();
+    console.log('API Response:', data);
+    return data;
   } catch (error) {
-    return [];
+    console.error('There was a problem with the fetch operation:', error);
   }
+
+
+  // try {
+  //   let get = axios.get(
+  //     `http://estatemanage.laptrinhjavawebsoftware.com/api-admin-blogs/search?key=${key}&page=${page}`
+  //   );
+
+  //   return (await get).data;
+  // } catch (error) {
+  //   return [];
+  // }
 };
 
 export {

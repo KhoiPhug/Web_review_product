@@ -21,7 +21,7 @@ import {
   getCommentByBlogId,
   getRecentComment,
 } from "../json/comments-in-blog-id-1";
-import { getID } from "../utils/string";
+import { getID, getPrefix } from "../utils/string";
 import Search from "../page/Search";
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -50,7 +50,7 @@ const router = createBrowserRouter(
           loader={async ({ params }) => {
             //console.log(params);
             let categorySlug = params.categorySlug;
-            let categoryId = getID(categorySlug);
+            let categoryId = getPrefix(categorySlug);
             let category = await getCategoryById(categoryId);
             let blogs = await getBlogByCategoryId({ id: categoryId });
             return { blogs, category };

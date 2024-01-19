@@ -82,7 +82,7 @@ const UserLayout = () => {
                       key={index}
                       className="text-lg text-blue-600 hover:text-red-500"
                     >
-                      {item.category}
+                      {item.slugCategory}
                     </a>
                   );
                 })}
