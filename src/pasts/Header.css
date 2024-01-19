@@ -1,0 +1,6 @@
+.icon {
+    order: -1; /* Đặt thứ tự hiển thị của biểu tượng trước chữ "TrueReview" */
+    margin-right: 0.5rem; /* Tạo khoảng cách giữa biểu tượng và chữ "TrueReview" */
+    width: 30px;
+    height: 30px;
+  }
